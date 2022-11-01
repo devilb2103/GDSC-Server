@@ -9,6 +9,13 @@ const {
   addRole,
   removeRole,
 } = require('./Database/CRUD/auth_controller');
+const {
+  addEvent,
+  removeEvent,
+  updateEvent,
+  addEventParticipants,
+  removeEventParticipant,
+} = require('./Database/CRUD/event_controller');
 
 dotenv.config();
 
@@ -61,8 +68,43 @@ app.post('/create/role', async (req, res) => {
   await addRole(req.body.uid, req.body.role, res);
 });
 
+app.post('/create/event', async (req, res) => {
+  await addEvent(
+    req.body.name,
+    req.body.description,
+    req.body.date,
+    req.body.startTime,
+    req.body.endTime,
+    res
+  );
+});
+
+app.patch('/update/event_participants', async (req, res) => {
+  await addEventParticipants(req.body.eid, req.body.uid, res);
+});
+
+app.patch('/update/event', async (req, res) => {
+  await updateEvent(
+    req.body.eid,
+    req.body.name,
+    req.body.description,
+    req.body.date,
+    req.body.startTime,
+    req.body.endTime,
+    res
+  );
+});
+
 app.delete('/delete/role', async (req, res) => {
   await removeRole(req.body.uid, req.body.role, res);
+});
+
+app.delete('/delete/event', async (req, res) => {
+  await removeEvent(req.body.eid, res);
+});
+
+app.delete('/delete/event_participants', async (req, res) => {
+  await removeEventParticipant(req.body.eid, req.body.uid, res);
 });
 
 app.listen(port, () => console.log(`port ${port}`));

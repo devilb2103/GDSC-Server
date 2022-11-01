@@ -28,7 +28,6 @@ async function addRole(uid, role, res) {
         if (roles == undefined) {
           roles = [];
         }
-        console.log(typeof roles);
         if (!roles.includes(role)) {
           roles.push(role);
           const jsonPath = `${uid}/roles`;
@@ -68,14 +67,13 @@ async function removeRole(uid, role, res) {
         if (roles == undefined) {
           roles = [];
         }
-        roles.includes(role);
         if (roles.includes(role)) {
           roles.pop(roles.indexOf(role));
           const jsonPath = `${uid}/roles`;
           await usersTable.update({ [jsonPath]: roles });
           res.status(200).send({
             status: true,
-            message: `successfully removed the ${role} role to ${uid}`,
+            message: `successfully removed the ${role} role from ${uid}`,
           });
         } else {
           res.status(400).send({
