@@ -3,6 +3,13 @@ const cors = require('cors');
 
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
+const { json } = require('body-parser');
+const {
+  addUser,
+  addRole,
+  removeRole,
+} = require('./Database/CRUD/auth_controller');
+
 dotenv.config();
 
 const app = express();
@@ -45,5 +52,17 @@ const port = process.env.PORT || 3000;
  * 1) Scrape data off new sites filtered by tech
  * 2) POST data to firestore
  */
+
+app.post('/create/user', async (req, res) => {
+  await addUser(req.body.uid, req.body.name, req.body.email, res);
+});
+
+app.post('/create/role', async (req, res) => {
+  await addRole(req.body.uid, req.body.role, res);
+});
+
+app.delete('/delete/role', async (req, res) => {
+  await removeRole(req.body.uid, req.body.role, res);
+});
 
 app.listen(port, () => console.log(`port ${port}`));

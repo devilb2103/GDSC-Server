@@ -1,0 +1,20 @@
+[
+  {
+    "uid1": {
+      "email": "xyz@mail.com",
+      "roles": ["member", "event_manager"]
+    },
+    "uid2": {
+      "email": "xyz@mail.com",
+      "roles": ["member", "event_manager"]
+    },
+    "uid3": {
+      "email": "xyz@mail.com",
+      "roles": ["member", "event_manager"]
+    },
+    "uid4": {
+      "email": "xyz@mail.com",
+      "roles": ["member", "event_manager"]
+    }
+  }
+]
