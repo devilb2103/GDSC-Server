@@ -19,7 +19,7 @@ async function addUser(uid, name, email, res) {
   }
 }
 
-function addRole(uid, role, res) {
+async function addRole(uid, role, res) {
   try {
     usersTable.child(`${uid}`).once('value', async (snapshot) => {
       if (snapshot.exists()) {
@@ -59,7 +59,7 @@ function addRole(uid, role, res) {
   }
 }
 
-function removeRole(uid, role, res) {
+async function removeRole(uid, role, res) {
   try {
     usersTable.child(`${uid}`).once('value', async (snapshot) => {
       if (snapshot.exists()) {
