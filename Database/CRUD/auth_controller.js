@@ -97,10 +97,70 @@ async function removeRole(uid, role, res) {
   }
 }
 
+async function getRoles(uid) {
+  data = {
+    status: false,
+    roles: [],
+  };
+  try {
+    await usersTable.child(`${uid}`).once('value', async (snapshot) => {
+      if (snapshot.exists()) {
+        const user = snapshot.val();
+
+        var roles = user.roles;
+        data.status = true;
+        if (roles == undefined) {
+          roles = [];
+        }
+        data.roles = roles;
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  return data;
+}
+
+async function hasPrevelige(uid, role) {
+  try {
+    const data = await getRoles(uid);
+    var roles = [];
+    // roles returns undefined
+    console.log(data);
+    if (data['status'] == false) {
+      return {
+        status: false,
+        message: `user with uid ${uid} does not exist`,
+      };
+    } else {
+      roles = data.roles;
+    }
+
+    if (!roles.includes(`${role}`)) {
+      return {
+        status: false,
+        message: `user with uid ${uid} does not have event priveliges`,
+      };
+    }
+
+    return {
+      status: true,
+      message: 'success',
+    };
+  } catch (error) {
+    return {
+      status: false,
+      message: `${error}`,
+    };
+  }
+}
+
 module.exports = {
   addUser: addUser,
   addRole: addRole,
   removeRole: removeRole,
+  getRoles: getRoles,
+  hasPrevelige: hasPrevelige,
 };
 
 //   const s = usersTable

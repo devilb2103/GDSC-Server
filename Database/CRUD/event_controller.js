@@ -1,8 +1,27 @@
 const { eventsTable } = require('../setup');
 const crypto = require('crypto');
+const { getRoles } = require('./auth_controller');
 
-async function addEvent(name, description, date, startTime, endTime, res) {
+async function addEvent(uid, name, description, date, startTime, endTime, res) {
   try {
+    const data = await getRoles(uid);
+    var roles = [];
+
+    if (data['status'] == false) {
+      return res.status(400).send({
+        status: false,
+        message: `user with uid ${uid} does not exist`,
+      });
+    } else {
+      roles = data.roles;
+    }
+
+    if (!roles.includes('EventManager')) {
+      return res.status(400).send({
+        status: false,
+        message: `user with uid ${uid} does not have event priveliges`,
+      });
+    }
     const id = crypto.randomBytes(33).toString('hex');
     await eventsTable.child(`${id}`).set({
       name: name,
@@ -23,12 +42,30 @@ async function addEvent(name, description, date, startTime, endTime, res) {
   }
 }
 
-async function removeEvent(id, res) {
+async function removeEvent(eid, uid, res) {
   try {
-    await eventsTable.child(`${id}`).remove();
+    const data = await getRoles(uid);
+    var roles = [];
+    if (data['status'] == false) {
+      return res.status(400).send({
+        status: false,
+        message: `user with uid ${uid} does not exist`,
+      });
+    } else {
+      roles = data.roles;
+    }
+
+    if (!roles.includes('EventManager')) {
+      return res.status(400).send({
+        status: false,
+        message: `user with uid ${uid} does not have event priveliges`,
+      });
+    }
+
+    await eventsTable.child(`${eid}`).remove();
     return res
       .status(200)
-      .send({ status: true, message: `Event wih id ${id} removed` });
+      .send({ status: true, message: `Event wih id ${eid} removed` });
   } catch (error) {
     return res.status(400).send({
       status: false,
@@ -39,6 +76,7 @@ async function removeEvent(id, res) {
 
 async function updateEvent(
   eid,
+  uid,
   name,
   description,
   date,
@@ -47,6 +85,25 @@ async function updateEvent(
   res
 ) {
   try {
+    const data = await getRoles(uid);
+    var roles = [];
+
+    if (data['status'] == false) {
+      return res.status(400).send({
+        status: false,
+        message: `user with uid ${uid} does not exist`,
+      });
+    } else {
+      roles = data.roles;
+    }
+
+    if (!roles.includes('EventManager')) {
+      return res.status(400).send({
+        status: false,
+        message: `user with uid ${uid} does not have event priveliges`,
+      });
+    }
+
     await eventsTable.child(`${eid}`).set({
       name: name,
       description: description,

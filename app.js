@@ -8,6 +8,7 @@ const {
   addUser,
   addRole,
   removeRole,
+  getRoles,
 } = require('./Database/CRUD/auth_controller');
 const {
   addEvent,
@@ -64,12 +65,13 @@ app.post('/create/user', async (req, res) => {
   await addUser(req.body.uid, req.body.name, req.body.email, res);
 });
 
-app.post('/create/role', async (req, res) => {
+app.patch('/create/role', async (req, res) => {
   await addRole(req.body.uid, req.body.role, res);
 });
 
 app.post('/create/event', async (req, res) => {
   await addEvent(
+    req.body.uid,
     req.body.name,
     req.body.description,
     req.body.date,
@@ -86,6 +88,7 @@ app.patch('/update/event_participants', async (req, res) => {
 app.patch('/update/event', async (req, res) => {
   await updateEvent(
     req.body.eid,
+    req.body.uid,
     req.body.name,
     req.body.description,
     req.body.date,
@@ -100,7 +103,7 @@ app.delete('/delete/role', async (req, res) => {
 });
 
 app.delete('/delete/event', async (req, res) => {
-  await removeEvent(req.body.eid, res);
+  await removeEvent(req.body.eid, req.body.uid, res);
 });
 
 app.delete('/delete/event_participants', async (req, res) => {
