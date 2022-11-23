@@ -1,4 +1,23 @@
-const { usersTable } = require('../setup');
+const { usersTable, db } = require('../setup');
+// roles => Member, EventManager
+var users = {};
+
+const doc = db.ref('users').on('value', async (snapshot) => {
+  await loadUsers();
+});
+
+async function loadUsers() {
+  try {
+    await usersTable.once('value', async (snapshot) => {
+      users = snapshot.val();
+    });
+  } catch (error) {
+    console.log({
+      status: false,
+      message: `${error}`,
+    });
+  }
+}
 
 // creates users when new account created
 async function addUser(uid, name, email, res) {
@@ -98,23 +117,15 @@ async function removeRole(uid, role, res) {
 }
 
 async function getRoles(uid) {
-  data = {
-    status: false,
-    roles: [],
-  };
   try {
-    await usersTable.child(`${uid}`).once('value', async (snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-
-        var roles = user.roles;
-        data.status = true;
-        if (roles == undefined) {
-          roles = [];
-        }
-        data.roles = roles;
-      }
-    });
+    var data = {
+      status: false,
+      roles: [],
+    };
+    if (uid in users) {
+      data.status = true;
+      data['roles'] = users[`${uid}`].roles;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -124,10 +135,8 @@ async function getRoles(uid) {
 async function hasPrevelige(uid, role) {
   try {
     const data = await getRoles(uid);
-    var roles = [];
-    // roles returns undefined
-    console.log(data);
-    if (data['status'] == false) {
+    var roles = data.roles;
+    if (data.status == false) {
       return {
         status: false,
         message: `user with uid ${uid} does not exist`,
@@ -139,13 +148,13 @@ async function hasPrevelige(uid, role) {
     if (!roles.includes(`${role}`)) {
       return {
         status: false,
-        message: `user with uid ${uid} does not have event priveliges`,
+        message: `user with uid ${uid} does not have ${role} priveliges`,
       };
     }
 
     return {
       status: true,
-      message: 'success',
+      message: `user with uid ${uid} has ${role} priveliges`,
     };
   } catch (error) {
     return {
@@ -159,7 +168,6 @@ module.exports = {
   addUser: addUser,
   addRole: addRole,
   removeRole: removeRole,
-  getRoles: getRoles,
   hasPrevelige: hasPrevelige,
 };
 

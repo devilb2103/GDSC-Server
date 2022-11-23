@@ -11,6 +11,7 @@ var usersTable = db.ref('users');
 var eventsTable = db.ref('events');
 
 module.exports = {
+  db: db,
   usersTable: usersTable,
   eventsTable: eventsTable,
 };

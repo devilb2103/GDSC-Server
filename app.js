@@ -9,6 +9,7 @@ const {
   addRole,
   removeRole,
   getRoles,
+  hasPrevelige,
 } = require('./Database/CRUD/auth_controller');
 const {
   addEvent,
@@ -16,6 +17,7 @@ const {
   updateEvent,
   addEventParticipants,
   removeEventParticipant,
+  getEvents,
 } = require('./Database/CRUD/event_controller');
 
 dotenv.config();
@@ -69,6 +71,10 @@ app.patch('/create/role', async (req, res) => {
   await addRole(req.body.uid, req.body.role, res);
 });
 
+app.get('/read/events', async (req, res) => {
+  await getEvents(req.body.uid, res);
+});
+
 app.post('/create/event', async (req, res) => {
   await addEvent(
     req.body.uid,
@@ -108,6 +114,11 @@ app.delete('/delete/event', async (req, res) => {
 
 app.delete('/delete/event_participants', async (req, res) => {
   await removeEventParticipant(req.body.eid, req.body.uid, res);
+});
+
+app.get('/test', async (req, res) => {
+  var a = await hasPrevelige('101', 'member');
+  console.log(a);
 });
 
 app.listen(port, () => console.log(`port ${port}`));

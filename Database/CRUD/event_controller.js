@@ -1,39 +1,72 @@
-const { eventsTable } = require('../setup');
+const { eventsTable, db } = require('../setup');
 const crypto = require('crypto');
-const { getRoles } = require('./auth_controller');
+const { hasPrevelige } = require('./auth_controller');
+
+var events = {};
+
+const doc = db.ref('events').on('value', async (snapshot) => {
+  await loadEvents();
+});
+
+async function getEvents(uid, res) {
+  try {
+    privelegeStatus = await hasPrevelige(uid, 'Member');
+
+    if (privelegeStatus.status == false) {
+      return res.status(400).send({
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
+      });
+    } else {
+      if ((events = {})) {
+        await loadEvents(res);
+      }
+      return res.status(200).send({ status: true, message: events });
+    }
+  } catch (error) {
+    return res.status(400).send({
+      status: false,
+      message: `${error}`,
+    });
+  }
+}
+
+async function loadEvents(res) {
+  try {
+    await eventsTable.once('value', async (snapshot) => {
+      events = snapshot.val();
+    });
+  } catch (error) {
+    console.log({
+      status: false,
+      message: `${error}`,
+    });
+  }
+}
 
 async function addEvent(uid, name, description, date, startTime, endTime, res) {
   try {
-    const data = await getRoles(uid);
-    var roles = [];
+    privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
-    if (data['status'] == false) {
+    if (privelegeStatus.status == false) {
       return res.status(400).send({
-        status: false,
-        message: `user with uid ${uid} does not exist`,
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
       });
     } else {
-      roles = data.roles;
-    }
-
-    if (!roles.includes('EventManager')) {
-      return res.status(400).send({
-        status: false,
-        message: `user with uid ${uid} does not have event priveliges`,
+      const id = crypto.randomBytes(33).toString('hex');
+      await eventsTable.child(`${id}`).set({
+        name: name,
+        description: description,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        participants: [],
       });
+      return res
+        .status(200)
+        .send({ status: true, message: `Event with id ${id} Added` });
     }
-    const id = crypto.randomBytes(33).toString('hex');
-    await eventsTable.child(`${id}`).set({
-      name: name,
-      description: description,
-      date: date,
-      startTime: startTime,
-      endTime: endTime,
-      participants: [],
-    });
-    return res
-      .status(200)
-      .send({ status: true, message: `Event wih id ${id} Added` });
   } catch (error) {
     return res.status(400).send({
       status: false,
@@ -44,28 +77,19 @@ async function addEvent(uid, name, description, date, startTime, endTime, res) {
 
 async function removeEvent(eid, uid, res) {
   try {
-    const data = await getRoles(uid);
-    var roles = [];
-    if (data['status'] == false) {
+    privelegeStatus = await hasPrevelige(uid, 'EventManager');
+
+    if (privelegeStatus.status == false) {
       return res.status(400).send({
-        status: false,
-        message: `user with uid ${uid} does not exist`,
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
       });
     } else {
-      roles = data.roles;
+      await eventsTable.child(`${eid}`).remove();
+      return res
+        .status(200)
+        .send({ status: true, message: `Event wih id ${eid} removed` });
     }
-
-    if (!roles.includes('EventManager')) {
-      return res.status(400).send({
-        status: false,
-        message: `user with uid ${uid} does not have event priveliges`,
-      });
-    }
-
-    await eventsTable.child(`${eid}`).remove();
-    return res
-      .status(200)
-      .send({ status: true, message: `Event wih id ${eid} removed` });
   } catch (error) {
     return res.status(400).send({
       status: false,
@@ -85,36 +109,26 @@ async function updateEvent(
   res
 ) {
   try {
-    const data = await getRoles(uid);
-    var roles = [];
+    privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
-    if (data['status'] == false) {
+    if (privelegeStatus.status == false) {
       return res.status(400).send({
-        status: false,
-        message: `user with uid ${uid} does not exist`,
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
       });
     } else {
-      roles = data.roles;
-    }
-
-    if (!roles.includes('EventManager')) {
-      return res.status(400).send({
-        status: false,
-        message: `user with uid ${uid} does not have event priveliges`,
+      await eventsTable.child(`${eid}`).set({
+        name: name,
+        description: description,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        participants: [],
       });
+      return res
+        .status(200)
+        .send({ status: true, message: `Event wih id ${eid} updated` });
     }
-
-    await eventsTable.child(`${eid}`).set({
-      name: name,
-      description: description,
-      date: date,
-      startTime: startTime,
-      endTime: endTime,
-      participants: [],
-    });
-    return res
-      .status(200)
-      .send({ status: true, message: `Event wih id ${eid} updated` });
   } catch (error) {
     return res.status(400).send({
       status: false,
@@ -125,34 +139,43 @@ async function updateEvent(
 
 async function addEventParticipants(eid, uid, res) {
   try {
-    eventsTable.child(`${eid}`).once('value', async (snapshot) => {
-      if (snapshot.exists()) {
-        const event = snapshot.val();
-        var participants = event.participants;
-        if (participants == undefined) {
-          participants = [];
-        }
-        if (!participants.includes(uid)) {
-          participants.push(uid);
-          const participantsPath = `${eid}/participants`;
-          await eventsTable.update({ [participantsPath]: participants });
-          res.status(200).send({
-            status: true,
-            message: `successfully added the participant ${uid} to ${eid} participants`,
-          });
+    privelegeStatus = await hasPrevelige(uid, 'Member');
+
+    if (privelegeStatus.status == false) {
+      return res.status(400).send({
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
+      });
+    } else {
+      eventsTable.child(`${eid}`).once('value', async (snapshot) => {
+        if (snapshot.exists()) {
+          const event = snapshot.val();
+          var participants = event.participants;
+          if (participants == undefined) {
+            participants = [];
+          }
+          if (!participants.includes(uid)) {
+            participants.push(uid);
+            const participantsPath = `${eid}/participants`;
+            await eventsTable.update({ [participantsPath]: participants });
+            res.status(200).send({
+              status: true,
+              message: `successfully added the participant ${uid} to ${eid} participants`,
+            });
+          } else {
+            res.status(400).send({
+              status: false,
+              message: `user with uid ${uid} already has enrolled for event ${eid}`,
+            });
+          }
         } else {
           res.status(400).send({
             status: false,
-            message: `user with uid ${uid} already has enrolled for event ${eid}`,
+            message: `Could not find event with eid ${eid}`,
           });
         }
-      } else {
-        res.status(400).send({
-          status: false,
-          message: `Could not find event with eid ${eid}`,
-        });
-      }
-    });
+      });
+    }
   } catch (e) {
     // throw error;
     res.status(400).send({
@@ -202,6 +225,7 @@ async function removeEventParticipant(eid, uid, res) {
 }
 
 module.exports = {
+  getEvents: getEvents,
   addEvent: addEvent,
   updateEvent: updateEvent,
   removeEvent: removeEvent,
