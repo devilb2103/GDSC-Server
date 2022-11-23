@@ -87,7 +87,7 @@ app.post('/create/event', async (req, res) => {
   );
 });
 
-app.patch('/update/event_participants', async (req, res) => {
+app.post('/create/event_participants', async (req, res) => {
   await addEventParticipants(req.body.eid, req.body.uid, res);
 });
 

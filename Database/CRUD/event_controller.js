@@ -147,34 +147,32 @@ async function addEventParticipants(eid, uid, res) {
         message: privelegeStatus.message,
       });
     } else {
-      eventsTable.child(`${eid}`).once('value', async (snapshot) => {
-        if (snapshot.exists()) {
-          const event = snapshot.val();
-          var participants = event.participants;
-          if (participants == undefined) {
-            participants = [];
-          }
-          if (!participants.includes(uid)) {
-            participants.push(uid);
-            const participantsPath = `${eid}/participants`;
-            await eventsTable.update({ [participantsPath]: participants });
-            res.status(200).send({
-              status: true,
-              message: `successfully added the participant ${uid} to ${eid} participants`,
-            });
-          } else {
-            res.status(400).send({
-              status: false,
-              message: `user with uid ${uid} already has enrolled for event ${eid}`,
-            });
-          }
+      if (eid in events) {
+        const event = events[`${eid}`];
+        var participants = event.participants;
+        if (participants == undefined) {
+          participants = [];
+        }
+        if (!participants.includes(uid)) {
+          participants.push(uid);
+          const participantsPath = `${eid}/participants`;
+          await eventsTable.update({ [participantsPath]: participants });
+          res.status(200).send({
+            status: true,
+            message: `successfully added the participant ${uid} to ${eid} participants`,
+          });
         } else {
           res.status(400).send({
             status: false,
-            message: `Could not find event with eid ${eid}`,
+            message: `user with uid ${uid} already has enrolled for event ${eid}`,
           });
         }
-      });
+      } else {
+        res.status(400).send({
+          status: false,
+          message: `Could not find event with eid ${eid}`,
+        });
+      }
     }
   } catch (e) {
     // throw error;
@@ -187,9 +185,16 @@ async function addEventParticipants(eid, uid, res) {
 
 async function removeEventParticipant(eid, uid, res) {
   try {
-    eventsTable.child(`${eid}`).once('value', async (snapshot) => {
-      if (snapshot.exists()) {
-        const event = snapshot.val();
+    privelegeStatus = await hasPrevelige(uid, 'Member');
+
+    if (privelegeStatus.status == false) {
+      return res.status(400).send({
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
+      });
+    } else {
+      if (eid in events) {
+        const event = events[`${eid}`];
         var participants = event.participants;
         if (participants == undefined) {
           participants = [];
@@ -214,7 +219,7 @@ async function removeEventParticipant(eid, uid, res) {
           message: `Could not find event with eid ${eid}`,
         });
       }
-    });
+    }
   } catch (e) {
     // throw error;
     res.status(400).send({
@@ -232,3 +237,5 @@ module.exports = {
   addEventParticipants: addEventParticipants,
   removeEventParticipant: removeEventParticipant,
 };
+
+// add role check for add and remove event members
