@@ -6,6 +6,12 @@ const doc = db.ref('users').on('value', async (snapshot) => {
   await loadUsers();
 });
 
+async function refreshUsers() {
+  if ((events = {})) {
+    await loadUsers();
+  }
+}
+
 async function loadUsers() {
   try {
     await usersTable.once('value', async (snapshot) => {
@@ -22,14 +28,21 @@ async function loadUsers() {
 // creates users when new account created
 async function addUser(uid, name, email, res) {
   try {
-    await usersTable.child(`${uid}`).set({
-      name: name,
-      email: email,
-      roles: ['member'],
-    });
-    return res
-      .status(200)
-      .send({ status: true, message: `User wih uid ${uid} Added` });
+    await refreshUsers();
+    if (uid in users) {
+      return res
+        .status(400)
+        .send({ status: true, message: `User wih uid ${uid} already exists` });
+    } else {
+      await usersTable.child(`${uid}`).set({
+        name: name,
+        email: email,
+        roles: ['member'],
+      });
+      return res
+        .status(200)
+        .send({ status: true, message: `User wih uid ${uid} Added` });
+    }
   } catch (error) {
     return res.status(400).send({
       status: false,
@@ -40,34 +53,33 @@ async function addUser(uid, name, email, res) {
 
 async function addRole(uid, role, res) {
   try {
-    usersTable.child(`${uid}`).once('value', async (snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        var roles = user.roles;
-        if (roles == undefined) {
-          roles = [];
-        }
-        if (!roles.includes(role)) {
-          roles.push(role);
-          const jsonPath = `${uid}/roles`;
-          await usersTable.update({ [jsonPath]: roles });
-          res.status(200).send({
-            status: true,
-            message: `successfully added the ${role} role to ${uid}`,
-          });
-        } else {
-          res.status(400).send({
-            status: false,
-            message: `user with uid ${uid} already has role ${role}`,
-          });
-        }
+    await refreshUsers();
+    if (uid in users) {
+      const user = users[`${uid}`];
+      var roles = user.roles;
+      if (roles == undefined) {
+        roles = [];
+      }
+      if (!roles.includes(role)) {
+        roles.push(role);
+        const jsonPath = `${uid}/roles`;
+        await usersTable.update({ [jsonPath]: roles });
+        res.status(200).send({
+          status: true,
+          message: `successfully added the ${role} role to ${uid}`,
+        });
       } else {
         res.status(400).send({
           status: false,
-          message: `Could not find user with uid ${uid}`,
+          message: `user with uid ${uid} already has role ${role}`,
         });
       }
-    });
+    } else {
+      res.status(400).send({
+        status: false,
+        message: `Could not find user with uid ${uid}`,
+      });
+    }
   } catch (e) {
     // throw error;
     res.status(400).send({
@@ -79,34 +91,33 @@ async function addRole(uid, role, res) {
 
 async function removeRole(uid, role, res) {
   try {
-    usersTable.child(`${uid}`).once('value', async (snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        var roles = user.roles;
-        if (roles == undefined) {
-          roles = [];
-        }
-        if (roles.includes(role)) {
-          roles.pop(roles.indexOf(role));
-          const jsonPath = `${uid}/roles`;
-          await usersTable.update({ [jsonPath]: roles });
-          res.status(200).send({
-            status: true,
-            message: `successfully removed the ${role} role from ${uid}`,
-          });
-        } else {
-          res.status(400).send({
-            status: false,
-            message: `user with uid ${uid} does not have the role ${role}`,
-          });
-        }
+    await refreshUsers();
+    if (uid in users) {
+      const user = users[`${uid}`];
+      var roles = user.roles;
+      if (roles == undefined) {
+        roles = [];
+      }
+      if (roles.includes(role)) {
+        roles.pop(roles.indexOf(role));
+        const jsonPath = `${uid}/roles`;
+        await usersTable.update({ [jsonPath]: roles });
+        res.status(200).send({
+          status: true,
+          message: `successfully removed the ${role} role from ${uid}`,
+        });
       } else {
         res.status(400).send({
           status: false,
-          message: `Could not find user with uid ${uid}`,
+          message: `user with uid ${uid} does not have the role ${role}`,
         });
       }
-    });
+    } else {
+      res.status(400).send({
+        status: false,
+        message: `Could not find user with uid ${uid}`,
+      });
+    }
   } catch (e) {
     // throw error;
     res.status(400).send({
@@ -118,6 +129,7 @@ async function removeRole(uid, role, res) {
 
 async function getRoles(uid) {
   try {
+    await refreshUsers();
     var data = {
       status: false,
       roles: [],
@@ -134,6 +146,7 @@ async function getRoles(uid) {
 
 async function hasPrevelige(uid, role) {
   try {
+    await refreshUsers();
     const data = await getRoles(uid);
     var roles = data.roles;
     if (data.status == false) {
@@ -170,20 +183,3 @@ module.exports = {
   removeRole: removeRole,
   hasPrevelige: hasPrevelige,
 };
-
-//   const s = usersTable
-//     .orderByChild('name')
-//     .equalTo('heee')
-//     .on('value', function (snapshot) {
-//       console.log(snapshot.val());
-//     });
-
-// try {
-
-// } catch (e) {
-//   // throw error;
-//   res.status(400).send({
-//     status: false,
-//     message: `${e}`,
-//   });
-// }

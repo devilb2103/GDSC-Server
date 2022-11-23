@@ -8,6 +8,12 @@ const doc = db.ref('events').on('value', async (snapshot) => {
   await loadEvents();
 });
 
+async function refreshEvents() {
+  if ((events = {})) {
+    await loadEvents();
+  }
+}
+
 async function getEvents(uid, res) {
   try {
     privelegeStatus = await hasPrevelige(uid, 'Member');
@@ -19,7 +25,7 @@ async function getEvents(uid, res) {
       });
     } else {
       if ((events = {})) {
-        await loadEvents(res);
+        await loadEvents();
       }
       return res.status(200).send({ status: true, message: events });
     }
@@ -31,7 +37,7 @@ async function getEvents(uid, res) {
   }
 }
 
-async function loadEvents(res) {
+async function loadEvents() {
   try {
     await eventsTable.once('value', async (snapshot) => {
       events = snapshot.val();
@@ -46,6 +52,7 @@ async function loadEvents(res) {
 
 async function addEvent(uid, name, description, date, startTime, endTime, res) {
   try {
+    await refreshEvents();
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
     if (privelegeStatus.status == false) {
@@ -77,6 +84,7 @@ async function addEvent(uid, name, description, date, startTime, endTime, res) {
 
 async function removeEvent(eid, uid, res) {
   try {
+    await refreshEvents();
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
     if (privelegeStatus.status == false) {
@@ -109,6 +117,7 @@ async function updateEvent(
   res
 ) {
   try {
+    await refreshEvents();
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
     if (privelegeStatus.status == false) {
@@ -139,6 +148,7 @@ async function updateEvent(
 
 async function addEventParticipants(eid, uid, res) {
   try {
+    await refreshEvents();
     privelegeStatus = await hasPrevelige(uid, 'Member');
 
     if (privelegeStatus.status == false) {
@@ -185,6 +195,7 @@ async function addEventParticipants(eid, uid, res) {
 
 async function removeEventParticipant(eid, uid, res) {
   try {
+    await refreshEvents();
     privelegeStatus = await hasPrevelige(uid, 'Member');
 
     if (privelegeStatus.status == false) {
@@ -237,5 +248,3 @@ module.exports = {
   addEventParticipants: addEventParticipants,
   removeEventParticipant: removeEventParticipant,
 };
-
-// add role check for add and remove event members

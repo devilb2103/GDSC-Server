@@ -63,16 +63,12 @@ const port = process.env.PORT || 3000;
  * 2) POST data to firestore
  */
 
-app.post('/create/user', async (req, res) => {
-  await addUser(req.body.uid, req.body.name, req.body.email, res);
-});
-
-app.patch('/create/role', async (req, res) => {
-  await addRole(req.body.uid, req.body.role, res);
-});
-
 app.get('/read/events', async (req, res) => {
   await getEvents(req.body.uid, res);
+});
+
+app.post('/create/user', async (req, res) => {
+  await addUser(req.body.uid, req.body.name, req.body.email, res);
 });
 
 app.post('/create/event', async (req, res) => {
@@ -89,6 +85,10 @@ app.post('/create/event', async (req, res) => {
 
 app.post('/create/event_participants', async (req, res) => {
   await addEventParticipants(req.body.eid, req.body.uid, res);
+});
+
+app.patch('/create/role', async (req, res) => {
+  await addRole(req.body.uid, req.body.role, res);
 });
 
 app.patch('/update/event', async (req, res) => {
@@ -116,9 +116,9 @@ app.delete('/delete/event_participants', async (req, res) => {
   await removeEventParticipant(req.body.eid, req.body.uid, res);
 });
 
-app.get('/test', async (req, res) => {
-  var a = await hasPrevelige('101', 'member');
-  console.log(a);
-});
+// app.get('/test', async (req, res) => {
+//   var a = await hasPrevelige('101', 'member');
+//   console.log(a);
+// });
 
 app.listen(port, () => console.log(`port ${port}`));
