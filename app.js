@@ -10,6 +10,7 @@ const {
   removeRole,
   getRoles,
   hasPrevelige,
+  getUserInfo,
 } = require('./Database/CRUD/auth_controller');
 const {
   addEvent,
@@ -65,6 +66,10 @@ const port = process.env.PORT || 3000;
 
 app.get('/read/events', async (req, res) => {
   await getEvents(req.body.uid, res);
+});
+
+app.get('/read/userInfo', async (req, res) => {
+  await getUserInfo(req.body.uid, res);
 });
 
 app.post('/create/user', async (req, res) => {

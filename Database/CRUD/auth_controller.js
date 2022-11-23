@@ -25,6 +25,27 @@ async function loadUsers() {
   }
 }
 
+async function getUserInfo(uid, res) {
+  try {
+    if (uid in users) {
+      return res.status(200).send({
+        status: true,
+        message: users[`${uid}`],
+      });
+    } else {
+      return res.status(400).send({
+        status: false,
+        message: `no user with uid ${uid} found`,
+      });
+    }
+  } catch (error) {
+    return res.status(400).send({
+      status: false,
+      message: `${error}`,
+    });
+  }
+}
+
 // creates users when new account created
 async function addUser(uid, name, email, res) {
   try {
@@ -178,6 +199,7 @@ async function hasPrevelige(uid, role) {
 }
 
 module.exports = {
+  getUserInfo: getUserInfo,
   addUser: addUser,
   addRole: addRole,
   removeRole: removeRole,
