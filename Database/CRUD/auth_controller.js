@@ -58,7 +58,7 @@ async function addUser(uid, name, email, res) {
       await usersTable.child(`${uid}`).set({
         name: name,
         email: email,
-        roles: ['member'],
+        roles: ['Member'],
       });
       return res
         .status(200)
