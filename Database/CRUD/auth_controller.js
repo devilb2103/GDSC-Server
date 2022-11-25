@@ -50,7 +50,6 @@ async function getUserInfo(uid, res) {
 async function addUser(uid, name, email, res) {
   try {
     await refreshUsers();
-    console.log(users);
     if (users != null && uid in users) {
       return res
         .status(200)
