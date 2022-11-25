@@ -175,6 +175,9 @@ async function hasPrevelige(uid, role) {
       };
     } else {
       roles = data.roles;
+      if (roles == undefined) {
+        roles = [];
+      }
     }
 
     if (!roles.includes(`${role}`)) {
