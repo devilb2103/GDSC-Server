@@ -27,9 +27,11 @@ async function getEvents(uid, res) {
       if ((events = {})) {
         await loadEvents();
       }
+
       return res.status(200).send({ status: true, message: events });
     }
   } catch (error) {
+    console.log(error);
     return res.status(400).send({
       status: false,
       message: `${error}`,
