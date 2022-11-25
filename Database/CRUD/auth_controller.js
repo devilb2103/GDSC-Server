@@ -33,7 +33,7 @@ async function getUserInfo(uid, res) {
         message: users[`${uid}`],
       });
     } else {
-      return res.status(400).send({
+      return res.status(200).send({
         status: false,
         message: `no user with uid ${uid} found`,
       });
@@ -52,7 +52,7 @@ async function addUser(uid, name, email, res) {
     await refreshUsers();
     if (uid in users) {
       return res
-        .status(400)
+        .status(200)
         .send({ status: true, message: `User wih uid ${uid} already exists` });
     } else {
       await usersTable.child(`${uid}`).set({
@@ -90,22 +90,21 @@ async function addRole(uid, role, res) {
           message: `successfully added the ${role} role to ${uid}`,
         });
       } else {
-        res.status(400).send({
+        res.status(200).send({
           status: false,
           message: `user with uid ${uid} already has role ${role}`,
         });
       }
     } else {
-      res.status(400).send({
+      res.status(200).send({
         status: false,
         message: `Could not find user with uid ${uid}`,
       });
     }
-  } catch (e) {
-    // throw error;
+  } catch (error) {
     res.status(400).send({
       status: false,
-      message: `${e}`,
+      message: `${error}`,
     });
   }
 }
@@ -128,22 +127,21 @@ async function removeRole(uid, role, res) {
           message: `successfully removed the ${role} role from ${uid}`,
         });
       } else {
-        res.status(400).send({
+        res.status(200).send({
           status: false,
           message: `user with uid ${uid} does not have the role ${role}`,
         });
       }
     } else {
-      res.status(400).send({
+      res.status(200).send({
         status: false,
         message: `Could not find user with uid ${uid}`,
       });
     }
-  } catch (e) {
-    // throw error;
+  } catch (error) {
     res.status(400).send({
       status: false,
-      message: `${e}`,
+      message: `${error}`,
     });
   }
 }
