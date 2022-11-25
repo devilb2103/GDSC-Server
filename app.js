@@ -32,11 +32,11 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
-app.get('/read/events', async (req, res) => {
+app.post('/read/events', async (req, res) => {
   await getEvents(req.body.uid, res);
 });
 
-app.get('/read/userInfo', async (req, res) => {
+app.post('/read/userInfo', async (req, res) => {
   await getUserInfo(req.body.uid, res);
 });
 
