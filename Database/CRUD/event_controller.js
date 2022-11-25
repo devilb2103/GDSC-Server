@@ -19,7 +19,7 @@ async function getEvents(uid, res) {
     privelegeStatus = await hasPrevelige(uid, 'Member');
 
     if (privelegeStatus.status == false) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
@@ -31,7 +31,6 @@ async function getEvents(uid, res) {
       return res.status(200).send({ status: true, message: events });
     }
   } catch (error) {
-    console.log(error);
     return res.status(400).send({
       status: false,
       message: `${error}`,
@@ -58,7 +57,7 @@ async function addEvent(uid, name, description, date, startTime, endTime, res) {
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
     if (privelegeStatus.status == false) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
@@ -90,7 +89,7 @@ async function removeEvent(eid, uid, res) {
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
     if (privelegeStatus.status == false) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
@@ -123,7 +122,7 @@ async function updateEvent(
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
 
     if (privelegeStatus.status == false) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
@@ -154,7 +153,7 @@ async function addEventParticipants(eid, uid, res) {
     privelegeStatus = await hasPrevelige(uid, 'Member');
 
     if (privelegeStatus.status == false) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
@@ -174,13 +173,13 @@ async function addEventParticipants(eid, uid, res) {
             message: `successfully added the participant ${uid} to ${eid} participants`,
           });
         } else {
-          res.status(400).send({
+          res.status(200).send({
             status: false,
             message: `user with uid ${uid} already has enrolled for event ${eid}`,
           });
         }
       } else {
-        res.status(400).send({
+        res.status(200).send({
           status: false,
           message: `Could not find event with eid ${eid}`,
         });
@@ -201,7 +200,7 @@ async function removeEventParticipant(eid, uid, res) {
     privelegeStatus = await hasPrevelige(uid, 'Member');
 
     if (privelegeStatus.status == false) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
@@ -221,13 +220,13 @@ async function removeEventParticipant(eid, uid, res) {
             message: `successfully removed the user ${uid} from event ${eid}`,
           });
         } else {
-          res.status(400).send({
+          res.status(200).send({
             status: false,
             message: `user with uid ${uid} is not a participant of the event with eid ${eid}`,
           });
         }
       } else {
-        res.status(400).send({
+        res.status(200).send({
           status: false,
           message: `Could not find event with eid ${eid}`,
         });
