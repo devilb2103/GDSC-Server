@@ -50,7 +50,7 @@ async function getUserInfo(uid, res) {
 async function addUser(uid, name, email, res) {
   try {
     await refreshUsers();
-    if (uid in users) {
+    if (users != {} && uid in users) {
       return res
         .status(200)
         .send({ status: true, message: `User wih uid ${uid} already exists` });
