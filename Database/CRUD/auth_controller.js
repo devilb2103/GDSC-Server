@@ -27,6 +27,7 @@ async function loadUsers() {
 
 async function getUserInfo(uid, res) {
   try {
+    await refreshUsers();
     if (uid in users) {
       return res.status(200).send({
         status: true,
