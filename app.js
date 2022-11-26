@@ -49,6 +49,7 @@ app.post('/create/event', async (req, res) => {
     req.body.uid,
     req.body.name,
     req.body.description,
+    req.body.venue,
     req.body.date,
     req.body.startTime,
     req.body.endTime,

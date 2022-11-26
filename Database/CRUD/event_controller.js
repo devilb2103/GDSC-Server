@@ -54,7 +54,16 @@ async function loadEvents() {
   }
 }
 
-async function addEvent(uid, name, description, date, startTime, endTime, res) {
+async function addEvent(
+  uid,
+  name,
+  description,
+  venue,
+  date,
+  startTime,
+  endTime,
+  res
+) {
   try {
     await refreshEvents();
     privelegeStatus = await hasPrevelige(uid, 'EventManager');
@@ -69,6 +78,7 @@ async function addEvent(uid, name, description, date, startTime, endTime, res) {
       await eventsTable.child(`${id}`).set({
         name: name,
         description: description,
+        venue: venue,
         date: date,
         startTime: startTime,
         endTime: endTime,
@@ -115,6 +125,7 @@ async function updateEvent(
   uid,
   name,
   description,
+  venue,
   date,
   startTime,
   endTime,
@@ -133,6 +144,7 @@ async function updateEvent(
       await eventsTable.child(`${eid}`).set({
         name: name,
         description: description,
+        venue: venue,
         date: date,
         startTime: startTime,
         endTime: endTime,
