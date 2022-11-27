@@ -141,20 +141,32 @@ async function updateEvent(
         message: privelegeStatus.message,
       });
     } else {
-      await eventsTable.child(`${eid}`).set({
-        name: name,
-        description: description,
-        venue: venue,
-        date: date,
-        startTime: startTime,
-        endTime: endTime,
-        participants: [],
-      });
-      return res
-        .status(200)
-        .send({ status: true, message: `Event wih id ${eid} updated` });
+      if (events == null) {
+        events = {};
+      }
+
+      if (eid in events) {
+        await eventsTable.child(`${eid}`).set({
+          name: name,
+          description: description,
+          venue: venue,
+          date: date,
+          startTime: startTime,
+          endTime: endTime,
+          participants: [],
+        });
+        return res
+          .status(200)
+          .send({ status: true, message: `Event wih id ${eid} updated` });
+      } else {
+        return res.status(200).send({
+          status: false,
+          message: `Event wih id ${eid} does not exist`,
+        });
+      }
     }
   } catch (error) {
+    console.log(error);
     return res.status(400).send({
       status: false,
       message: `${error}`,
