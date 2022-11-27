@@ -29,6 +29,10 @@ async function getUserInfo(uid, res) {
   try {
     await refreshUsers();
     if (uid in users) {
+      var data = users[`${uid}`];
+      if (data['roles'] == undefined) {
+        data['roles'] = [];
+      }
       return res.status(200).send({
         status: true,
         message: users[`${uid}`],
