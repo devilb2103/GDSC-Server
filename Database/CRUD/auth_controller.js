@@ -35,7 +35,7 @@ async function getUserInfo(uid, res) {
       }
       return res.status(200).send({
         status: true,
-        message: users[`${uid}`],
+        message: data,
       });
     } else {
       return res.status(200).send({
