@@ -43,7 +43,7 @@ async function getEvents(uid, res) {
 
 async function loadEvents() {
   try {
-    await eventsTable.once('value', async (snapshot) => {
+    await eventsTable.orderByChild('date').once('value', async (snapshot) => {
       events = snapshot.val();
     });
   } catch (error) {
