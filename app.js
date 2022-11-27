@@ -32,6 +32,10 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
+app.get('/health', async (req, res) => {
+  res.status(200).send('Server is up and running...');
+});
+
 app.post('/read/events', async (req, res) => {
   await getEvents(req.body.uid, res);
 });
