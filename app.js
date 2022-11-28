@@ -3,13 +3,10 @@ const cors = require('cors');
 
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const { json } = require('body-parser');
 const {
   addUser,
   addRole,
   removeRole,
-  getRoles,
-  hasPrevelige,
   getUserInfo,
 } = require('./Database/CRUD/auth_controller');
 const {
@@ -51,6 +48,7 @@ app.post('/create/user', async (req, res) => {
 app.post('/create/event', async (req, res) => {
   await addEvent(
     req.body.uid,
+    req.body.domain,
     req.body.name,
     req.body.description,
     req.body.venue,
@@ -73,6 +71,7 @@ app.patch('/update/event', async (req, res) => {
   await updateEvent(
     req.body.eid,
     req.body.uid,
+    req.body.domain,
     req.body.name,
     req.body.description,
     req.body.venue,

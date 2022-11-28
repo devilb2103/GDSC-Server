@@ -56,6 +56,7 @@ async function loadEvents() {
 
 async function addEvent(
   uid,
+  domain,
   name,
   description,
   venue,
@@ -76,6 +77,7 @@ async function addEvent(
     } else {
       const id = crypto.randomBytes(33).toString('hex');
       await eventsTable.child(`${id}`).set({
+        domain: domain,
         name: name,
         description: description,
         venue: venue,
@@ -123,6 +125,7 @@ async function removeEvent(eid, uid, res) {
 async function updateEvent(
   eid,
   uid,
+  domain,
   name,
   description,
   venue,
@@ -147,6 +150,7 @@ async function updateEvent(
 
       if (eid in events) {
         await eventsTable.child(`${eid}`).set({
+          domain: domain,
           name: name,
           description: description,
           venue: venue,
