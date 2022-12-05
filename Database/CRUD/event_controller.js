@@ -157,7 +157,7 @@ async function updateEvent(
           date: date,
           startTime: startTime,
           endTime: endTime,
-          participants: [],
+          participants: events[eid]['participants'],
         });
         return res
           .status(200)
