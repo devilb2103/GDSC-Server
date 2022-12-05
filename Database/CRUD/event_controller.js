@@ -83,6 +83,7 @@ async function addEvent(
         venue: venue,
         date: date,
         startTime: startTime,
+        endTime: endTime,
         participants: ['None'],
       });
       return res
