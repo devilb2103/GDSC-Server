@@ -52,7 +52,8 @@ app.post('/create/event', async (req, res) => {
     req.body.name,
     req.body.description,
     req.body.venue,
-    req.body.date,
+    req.body.startDate,
+    req.body.endDate,
     req.body.startTime,
     req.body.endTime,
     res
@@ -75,7 +76,8 @@ app.patch('/update/event', async (req, res) => {
     req.body.name,
     req.body.description,
     req.body.venue,
-    req.body.date,
+    req.body.startDate,
+    req.body.endDate,
     req.body.startTime,
     req.body.endTime,
     res
