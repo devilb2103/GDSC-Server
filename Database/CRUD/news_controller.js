@@ -8,10 +8,7 @@ var nextRefreshDate = moment();
 
 const tempDoc = db.ref('news/tempData').on('value', async (snapshot) => {
   try {
-    nextRefreshDate = moment.tz(
-      snapshot.val()['nextUpdateTime'],
-      'YYYY-M-D H:m:s'
-    );
+    nextRefreshDate = moment(snapshot.val()['nextUpdateTime']);
   } catch {}
 });
 
@@ -22,6 +19,7 @@ const newsDoc = db.ref('news/newsData').on('value', async (snapshot) => {
 async function refreshNews() {
   try {
     if (moment().isAfter(nextRefreshDate)) {
+      console.log(moment() + ' ' + nextRefreshDate);
       // write latest news to db logic
       var x = await getNewsData();
       if (x['status'] == 'error') {
