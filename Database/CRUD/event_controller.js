@@ -9,7 +9,7 @@ const doc = db.ref('events').on('value', async (snapshot) => {
 });
 
 async function refreshEvents() {
-  if (Object.keys(events).length == 0) {
+  if (events == null) {
     await loadEvents();
   }
 }
@@ -17,14 +17,13 @@ async function refreshEvents() {
 async function getEvents(uid, res) {
   try {
     privelegeStatus = await hasPrevelige(uid, 'Member');
-
     if (privelegeStatus.status == false) {
       return res.status(200).send({
         status: privelegeStatus.status,
         message: privelegeStatus.message,
       });
     } else {
-      if (Object.keys(events).length == 0) {
+      if (events == null) {
         await loadEvents();
       }
       if (events == null) {
@@ -174,7 +173,6 @@ async function updateEvent(
       }
     }
   } catch (error) {
-    console.log(error);
     return res.status(400).send({
       status: false,
       message: `${error}`,
