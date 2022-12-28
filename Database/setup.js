@@ -9,9 +9,11 @@ admin.initializeApp({
 const db = admin.database();
 var usersTable = db.ref('users');
 var eventsTable = db.ref('events');
+var newsTable = db.ref('news');
 
 module.exports = {
   db: db,
   usersTable: usersTable,
   eventsTable: eventsTable,
+  newsTable: newsTable,
 };

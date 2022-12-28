@@ -9,7 +9,7 @@ const doc = db.ref('events').on('value', async (snapshot) => {
 });
 
 async function refreshEvents() {
-  if ((events = {})) {
+  if (Object.keys(events).length == 0) {
     await loadEvents();
   }
 }
@@ -24,7 +24,7 @@ async function getEvents(uid, res) {
         message: privelegeStatus.message,
       });
     } else {
-      if ((events = {})) {
+      if (Object.keys(events).length == 0) {
         await loadEvents();
       }
       if (events == null) {

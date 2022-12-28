@@ -17,6 +17,7 @@ const {
   removeEventParticipant,
   getEvents,
 } = require('./Database/CRUD/event_controller');
+const { getNews } = require('./Database/CRUD/news_controller');
 
 dotenv.config();
 
@@ -39,6 +40,10 @@ app.post('/read/events', async (req, res) => {
 
 app.post('/read/userInfo', async (req, res) => {
   await getUserInfo(req.body.uid, res);
+});
+
+app.post('/read/news', async (req, res) => {
+  await getNews(req.body.uid, res);
 });
 
 app.post('/create/user', async (req, res) => {
