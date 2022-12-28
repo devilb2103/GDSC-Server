@@ -19,7 +19,6 @@ const newsDoc = db.ref('news/newsData').on('value', async (snapshot) => {
 async function refreshNews() {
   try {
     if (moment().isAfter(nextRefreshDate)) {
-      console.log(moment() + ' ' + nextRefreshDate);
       // write latest news to db logic
       var x = await getNewsData();
       if (x['status'] == 'error') {
