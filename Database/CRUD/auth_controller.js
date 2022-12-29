@@ -7,7 +7,8 @@ const doc = db.ref('users').on('value', async (snapshot) => {
 });
 
 async function refreshUsers() {
-  if (users == null) {
+  if (users == {} || users == null || users == undefined) {
+    console.log(users);
     await loadUsers();
   }
 }
