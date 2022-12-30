@@ -7,8 +7,12 @@ const doc = db.ref('users').on('value', async (snapshot) => {
 });
 
 async function refreshUsers() {
-  console.log(users);
-  if (users == {} || users == null || users == undefined) {
+  if (
+    users == {} ||
+    users == null ||
+    users == undefined ||
+    Object.keys(users).length == 0
+  ) {
     console.log(users);
     await loadUsers();
   }
@@ -16,6 +20,7 @@ async function refreshUsers() {
 
 async function loadUsers() {
   try {
+    console.log('users reloaded');
     await usersTable.once('value', async (snapshot) => {
       users = snapshot.val();
     });
