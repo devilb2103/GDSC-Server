@@ -84,6 +84,50 @@ async function addUser(uid, name, email, res) {
   }
 }
 
+async function addUserInfo(uid, name, prn, number, branch, res) {
+  try {
+    await refreshUsers();
+    if (uid in users) {
+      const user = users[`${uid}`];
+      var roles = user.roles;
+      if (roles == undefined) {
+        roles = [];
+      }
+      if (roles.includes('Member')) {
+        await usersTable.child(`${uid}`).set({
+          name: name,
+          prn: prn,
+          number: number,
+          branch: branch,
+          email: user.email,
+          roles: user.roles,
+        });
+        console.log(user);
+        //
+        res.status(200).send({
+          status: true,
+          message: `details updated for user with uid ${uid}.`,
+        });
+      } else {
+        res.status(200).send({
+          status: false,
+          message: `user with uid ${uid} does not have permissions to change details.`,
+        });
+      }
+    } else {
+      res.status(200).send({
+        status: false,
+        message: `Could not find user with uid ${uid}`,
+      });
+    }
+  } catch (error) {
+    res.status(400).send({
+      status: false,
+      message: `${error}`,
+    });
+  }
+}
+
 async function addRole(uid, role, res) {
   try {
     await refreshUsers();
@@ -214,6 +258,7 @@ async function hasPrevelige(uid, role) {
 module.exports = {
   getUserInfo: getUserInfo,
   addUser: addUser,
+  addUserInfo: addUserInfo,
   addRole: addRole,
   removeRole: removeRole,
   hasPrevelige: hasPrevelige,

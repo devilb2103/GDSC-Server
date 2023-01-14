@@ -8,6 +8,7 @@ const {
   addRole,
   removeRole,
   getUserInfo,
+  addUserInfo,
 } = require('./Database/CRUD/auth_controller');
 const {
   addEvent,
@@ -85,6 +86,17 @@ app.patch('/update/event', async (req, res) => {
     req.body.endDate,
     req.body.startTime,
     req.body.endTime,
+    res
+  );
+});
+
+app.post('/update/user', async (req, res) => {
+  await addUserInfo(
+    req.body.uid,
+    req.body.name,
+    req.body.prn,
+    req.body.number,
+    req.body.branch,
     res
   );
 });
