@@ -32,6 +32,15 @@ async function loadUsers() {
   }
 }
 
+async function getUsers() {
+  try {
+    await refreshUsers();
+    return users;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 async function getUserInfo(uid, res) {
   try {
     await refreshUsers();
@@ -256,6 +265,8 @@ async function hasPrevelige(uid, role) {
 }
 
 module.exports = {
+  getUsers: getUsers,
+  refreshUsers: refreshUsers,
   getUserInfo: getUserInfo,
   addUser: addUser,
   addUserInfo: addUserInfo,

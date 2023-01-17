@@ -1,6 +1,6 @@
 const { eventsTable, db } = require('../setup');
 const crypto = require('crypto');
-const { hasPrevelige } = require('./auth_controller');
+const { hasPrevelige, refreshUsers, getUsers } = require('./auth_controller');
 
 var events = {};
 
@@ -274,6 +274,48 @@ async function removeEventParticipant(eid, uid, res) {
   }
 }
 
+async function getEventParticipants(eid, uid, res) {
+  try {
+    await refreshEvents();
+    await refreshUsers();
+    privelegeStatus = await hasPrevelige(uid, 'EventManager');
+
+    if (privelegeStatus.status == false) {
+      return res.status(200).send({
+        status: privelegeStatus.status,
+        message: privelegeStatus.message,
+      });
+    } else {
+      if (eid in events) {
+        var participantUIDs = events[eid]['participants'];
+        var users = await getUsers();
+        compiledParticipants = {};
+        for (let i = 0; i < participantUIDs.length; i++) {
+          const element = participantUIDs[i];
+          if (element != 'None') {
+            compiledParticipants[element] = users[element];
+          }
+        }
+        res.status(200).send({
+          status: true,
+          message: compiledParticipants,
+        });
+      } else {
+        res.status(200).send({
+          status: false,
+          message: `Could not find event with eid ${eid}`,
+        });
+      }
+    }
+  } catch (e) {
+    // throw error;
+    res.status(400).send({
+      status: false,
+      message: `${e}`,
+    });
+  }
+}
+
 module.exports = {
   getEvents: getEvents,
   addEvent: addEvent,
@@ -281,4 +323,5 @@ module.exports = {
   removeEvent: removeEvent,
   addEventParticipants: addEventParticipants,
   removeEventParticipant: removeEventParticipant,
+  getEventParticipants: getEventParticipants,
 };

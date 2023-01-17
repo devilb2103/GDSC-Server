@@ -17,6 +17,7 @@ const {
   addEventParticipants,
   removeEventParticipant,
   getEvents,
+  getEventParticipants,
 } = require('./Database/CRUD/event_controller');
 const { getNews } = require('./Database/CRUD/news_controller');
 
@@ -37,6 +38,10 @@ app.get('/health', async (req, res) => {
 
 app.post('/read/events', async (req, res) => {
   await getEvents(req.body.uid, res);
+});
+
+app.post('/read/event/participants', async (req, res) => {
+  await getEventParticipants(req.body.eid, req.body.uid, res);
 });
 
 app.post('/read/userInfo', async (req, res) => {
