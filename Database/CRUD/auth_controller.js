@@ -111,7 +111,7 @@ async function addUserInfo(uid, name, prn, number, branch, res) {
           email: user.email,
           roles: user.roles,
         });
-        console.log(user);
+        // console.log(user);
         //
         res.status(200).send({
           status: true,

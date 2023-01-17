@@ -245,7 +245,6 @@ async function removeEventParticipant(eid, uid, res) {
           participants = [];
         }
         if (participants.includes(uid)) {
-          // participants.pop(participants.indexOf(uid));
           const newArr = participants.filter(function (id) {
             return id !== uid;
           });
