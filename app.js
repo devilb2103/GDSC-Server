@@ -102,6 +102,7 @@ app.post('/update/user', async (req, res) => {
     req.body.prn,
     req.body.number,
     req.body.branch,
+    req.body.pfp,
     res
   );
 });

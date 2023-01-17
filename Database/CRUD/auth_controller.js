@@ -93,7 +93,7 @@ async function addUser(uid, name, email, res) {
   }
 }
 
-async function addUserInfo(uid, name, prn, number, branch, res) {
+async function addUserInfo(uid, name, prn, number, branch, pfp, res) {
   try {
     await refreshUsers();
     if (uid in users) {
@@ -108,6 +108,7 @@ async function addUserInfo(uid, name, prn, number, branch, res) {
           prn: prn,
           number: number,
           branch: branch,
+          pfp: pfp,
           email: user.email,
           roles: user.roles,
         });
