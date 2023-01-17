@@ -245,9 +245,12 @@ async function removeEventParticipant(eid, uid, res) {
           participants = [];
         }
         if (participants.includes(uid)) {
-          participants.pop(participants.indexOf(uid));
+          // participants.pop(participants.indexOf(uid));
+          const newArr = participants.filter(function (id) {
+            return id !== uid;
+          });
           const participantsPath = `${eid}/participants`;
-          await eventsTable.update({ [participantsPath]: participants });
+          await eventsTable.update({ [participantsPath]: newArr });
           res.status(200).send({
             status: true,
             message: `successfully removed the user ${uid} from event ${eid}`,
