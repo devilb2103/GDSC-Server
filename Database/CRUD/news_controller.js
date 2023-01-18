@@ -23,17 +23,16 @@ async function refreshNews() {
       // write latest news to db logic
       // var x = await getNewsDataNewsAPI();
       var x = await getNewsDataInShortsAPI();
-      // console.log(x);
 
       if (x['data'] == undefined || x['data'] == null || x['data'] == []) {
-        console.log(x);
+        console.log(x['data']);
       } else {
         // write data to db
         await newsTable.child('newsData').set(x);
 
         //update next update time
         await newsTable.child('tempData').set({
-          nextUpdateTime: moment().add(10, 'minutes').toString(),
+          nextUpdateTime: moment().add(30, 'minutes').toString(),
         });
       }
     }
@@ -80,10 +79,6 @@ async function getNewsDataNewsAPI() {
 }
 
 async function getNewsDataInShortsAPI() {
-  var options = {
-    lang: 'en',
-    category: 'technology',
-  };
   var x = await inshorts.getNewsCustom();
   return x;
 }
