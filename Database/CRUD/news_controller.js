@@ -33,7 +33,7 @@ async function refreshNews() {
 
         //update next update time
         await newsTable.child('tempData').set({
-          nextUpdateTime: moment().add(30, 'minutes').toString(),
+          nextUpdateTime: moment().add(10, 'minutes').toString(),
         });
       }
     }
