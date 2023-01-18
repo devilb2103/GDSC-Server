@@ -23,7 +23,6 @@ async function refreshNews() {
       // write latest news to db logic
       // var x = await getNewsDataNewsAPI();
       var x = await getNewsDataInShortsAPI2();
-      console.log(x);
 
       if (x['data'] == undefined || x['data'] == null || x['data'] == []) {
         console.log(x['data']);
