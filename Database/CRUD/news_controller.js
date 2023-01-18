@@ -1,3 +1,4 @@
+const inshorts = require('inshorts-news-api');
 const moment = require('moment/moment');
 const { newsApi } = require('../news_api');
 const { newsTable, db } = require('../setup');
@@ -20,8 +21,11 @@ async function refreshNews() {
   try {
     if (moment().isAfter(nextRefreshDate)) {
       // write latest news to db logic
-      var x = await getNewsData();
-      if (x['status'] == 'error') {
+      // var x = await getNewsDataNewsAPI();
+      var x = await getNewsDataInShortsAPI();
+      // console.log(x);
+
+      if (x['data'] == undefined || x['data'] == null || x['data'] == []) {
         console.log(x);
       } else {
         // write data to db
@@ -29,7 +33,7 @@ async function refreshNews() {
 
         //update next update time
         await newsTable.child('tempData').set({
-          nextUpdateTime: moment().add(30, 'minutes').toString(),
+          nextUpdateTime: moment().add(10, 'minutes').toString(),
         });
       }
     }
@@ -66,12 +70,21 @@ async function getNews(uid, res) {
   }
 }
 
-async function getNewsData() {
+async function getNewsDataNewsAPI() {
   var x = await newsApi.v2.topHeadlines({
     category: 'technology',
     language: 'en',
     country: 'in',
   });
+  return x;
+}
+
+async function getNewsDataInShortsAPI() {
+  var options = {
+    lang: 'en',
+    category: 'technology',
+  };
+  var x = await inshorts.getNewsCustom();
   return x;
 }
 
