@@ -22,7 +22,8 @@ async function refreshNews() {
     if (moment().isAfter(nextRefreshDate)) {
       // write latest news to db logic
       // var x = await getNewsDataNewsAPI();
-      var x = await getNewsDataInShortsAPI();
+      var x = await getNewsDataInShortsAPI2();
+      console.log(x);
 
       if (x['data'] == undefined || x['data'] == null || x['data'] == []) {
         console.log(x['data']);
@@ -69,18 +70,24 @@ async function getNews(uid, res) {
   }
 }
 
-async function getNewsDataNewsAPI() {
-  var x = await newsApi.v2.topHeadlines({
-    category: 'technology',
-    language: 'en',
-    country: 'in',
-  });
-  return x;
-}
-
 async function getNewsDataInShortsAPI() {
   var x = await inshorts.getNewsCustom();
   return x;
+}
+
+async function getNewsDataInShortsAPI2() {
+  var options = {
+    lang: 'en',
+    category: 'technology',
+  };
+  var resp = {};
+  var y = await inshorts.getNews(options, (x) => {
+    resp['category'] = 'Technology';
+    resp['count-articles'] = x.length;
+    resp['data'] = x;
+  });
+
+  return resp;
 }
 
 module.exports = {
