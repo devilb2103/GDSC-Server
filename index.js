@@ -9,7 +9,7 @@ const {
   removeRole,
   getUserInfo,
   addUserInfo,
-} = require('../Database/CRUD/auth_controller');
+} = require('./Database/CRUD/auth_controller');
 const {
   addEvent,
   removeEvent,
@@ -18,8 +18,8 @@ const {
   removeEventParticipant,
   getEvents,
   getEventParticipants,
-} = require('../Database/CRUD/event_controller');
-const { getNews } = require('../Database/CRUD/news_controller');
+} = require('./Database/CRUD/event_controller');
+const { getNews } = require('./Database/CRUD/news_controller');
 
 dotenv.config();
 
